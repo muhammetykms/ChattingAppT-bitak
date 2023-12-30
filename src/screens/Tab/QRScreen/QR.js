@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button, Alert } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import firebase from "../../../utils/firebase";
 import { useRoute } from "@react-navigation/native";
-import { set } from "firebase/database";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const QRScreen = () => {
   const route = useRoute(); // Move useRoute inside the component
@@ -45,27 +45,18 @@ const QRScreen = () => {
     console.log(
       `Bar code with type ${type} and data ${data} has been scanned!`
     );
-
+    console.log("data: ", data);
     try {
-      // Extract name and email
-      const [name, email] = data.split(", ");
+      // Extract name, email, and userId
+      const [friendName, friendEmail, friendUserId] = data.split(" ");
 
-      // Extract userId using a regular expression
-      const userIdMatch = data.match(
-        /(\b[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}\b)$/
-      );
-      const userId = userIdMatch ? userIdMatch[0] : undefined;
-
-      console.log("Name:", name);
-      console.log("Email:", email);
-      console.log("UserId:", userId);
-
-      if (name && email && userId) {
-        // Add name, email, and userId to the "friends" collection
-        await firebase.firestore().collection("friends").add({
-          name: name,
-          email: email,
-          userId: userId,
+      // Ensure that the data is valid
+      if (friendName && friendEmail && friendUserId) {
+        // Add friend to the "friends" collection with user-specific ID
+        await firebase.firestore().collection(`users/${id}/friends`).add({
+          name: friendName,
+          email: friendEmail,
+          userId: friendUserId,
           // Add other fields if needed
         });
 

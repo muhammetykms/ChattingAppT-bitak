@@ -45,25 +45,24 @@ const Status = ({ navigation }) => {
 
   const getFriends = async () => {
     try {
-      const id = await AsyncStorage.getItem("USERID");
+      const userId = await AsyncStorage.getItem("USERID");
+      console.log("Logged-in UserID:", userId);
 
-      // Query the "friends" collection where the current user's ID is in the "userId" field
+      // Query the "friends" subcollection under the specific user's ID
       const friendsQuery = await firebase
         .firestore()
-        .collection("friends")
-        .where("userId", "==", id)
+        .collection(`users/${userId}/friends`)
         .get();
 
-      // Extract the friends directly from the retrieved documents
       const friendsData = friendsQuery.docs.map((doc) => doc.data());
+      console.log("Friends Query Result:", friendsData);
 
-      // Set the friends state with the retrieved data
-      setFriends(friendsData || []);
+      setFriends(friendsData);
+      setId(userId);
     } catch (error) {
       console.error("Error getting friends:", error);
     }
   };
-
   return (
     <View>
       <FlatList
@@ -78,7 +77,10 @@ const Status = ({ navigation }) => {
             <TouchableOpacity
               style={styles.userItem}
               onPress={() => {
-                navigation.navigate("ChatDetail", { data: item, id: id });
+                navigation.navigate("ChatDetail", {
+                  data: item,
+                  id: id,
+                });
               }}
             >
               <Image source={friendAvatar} style={styles.userIcon} />

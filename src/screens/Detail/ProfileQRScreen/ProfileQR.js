@@ -62,7 +62,7 @@ const UserQRCodeScreen = () => {
 
   // Update qrData based on the fetched user data
   const { name, mail } = userData;
-  const qrData = `${name}, ${mail} ${userId}`;
+  const qrData = `${name} ${mail} ${userId}`;
 
   return (
     <View style={styles.container}>

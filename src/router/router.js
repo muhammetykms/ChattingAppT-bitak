@@ -7,7 +7,7 @@ import ForgotPasswordScreen from "../screens/Login/ForgotPasswordScreen/ForgotPa
 
 // --------------Tabs-----------------
 import ChatScreen from "../screens/Tab/ChatScreen/Chat";
-import CallsScreen from "../screens/Tab/CallsScreen/Calls";
+// import CallsScreen from "../screens/Tab/CallsScreen/Calls";
 import QRScreen from "../screens/Tab/QRScreen/QR";
 import SettingsScreen from "../screens/Tab/SettingScreen/Settings";
 import StatusScreen from "../screens/Tab/StatusScreen/Status";
@@ -56,11 +56,11 @@ function BottomNavigator() {
         component={StatusScreen}
         options={{ tabBarLabel: "Durum" }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Aramalar"
         component={CallsScreen}
         options={{ tabBarLabel: "Aramalar" }}
-      />
+      /> */}
       <Tab.Screen
         name="QR"
         component={QRScreen}
