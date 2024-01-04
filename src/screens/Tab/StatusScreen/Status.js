@@ -1,4 +1,11 @@
-import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import firebase from "../../../utils/firebase";
@@ -9,10 +16,11 @@ const Status = ({ navigation }) => {
   const [friends, setFriends] = useState([]);
   const [avatarSources, setAvatarSources] = useState({});
   const [id, setId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [refreshing]);
 
   useEffect(() => {
     if (friends.length > 0) {
@@ -24,6 +32,12 @@ const Status = ({ navigation }) => {
 
   const fetchData = async () => {
     await getFriends();
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
   };
 
   const getUserImage = async (userId) => {
@@ -63,10 +77,16 @@ const Status = ({ navigation }) => {
       console.error("Error getting friends:", error);
     }
   };
+  console.log("friends: ", friends);
+  console.log("avatarSources: ", avatarSources);
+
   return (
     <View>
       <FlatList
         data={friends}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         renderItem={({ item }) => {
           const friendUserId = item.userId;
           const friendAvatar = avatarSources[friendUserId]
@@ -85,6 +105,7 @@ const Status = ({ navigation }) => {
             >
               <Image source={friendAvatar} style={styles.userIcon} />
               <Text style={styles.name}>{item.name}</Text>
+              <Text> Mesaj Gönder</Text>
             </TouchableOpacity>
           );
         }}

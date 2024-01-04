@@ -41,6 +41,7 @@ const SignIn = ({ navigation }) => {
 
   const loginUser = () => {
     setVisible(true);
+
     firebase
       .firestore()
       .collection("users")
@@ -48,18 +49,46 @@ const SignIn = ({ navigation }) => {
       .get()
       .then((res) => {
         setVisible(false);
+
         if (res.docs.length > 0) {
           const userData = res.docs[0].data();
           console.log("userData: ", userData);
+
           if (userData.password === password) {
-            console.log(JSON.stringify(userData));
+            // Kullanıcı giriş yaptığında Firestore'da belge oluştur veya güncelle
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(userData.userId)
+              .set({
+                // Kullanıcı verileri
+                name: userData.name,
+                mail: userData.mail,
+                userId: userData.userId,
+                lastname: userData.lastname,
+                password: userData.password,
+                selectedLanguage: userData.selectedLanguage,
+                loggedIn: true, // Giriş durumu
+                // imageUrl: userData.imageUrl,
+              })
+              .then(() => {
+                console.log("Firestore belgesi oluşturuldu/güncellendi");
+              })
+              .catch((error) => {
+                console.error("Firestore hatası:", error);
+              });
+
             goToNext(
               userData.name,
               userData.mail,
               userData.userId,
               userData.lastname,
-              userData.password
+              userData.password,
+              userData.selectedLanguage,
+              userData.loggedIn, // Giriş durumu
+              userData.imageUrl
             );
+
             navigation.navigate("BottomTab");
           } else {
             Alert.alert("Şifre Yalnış");

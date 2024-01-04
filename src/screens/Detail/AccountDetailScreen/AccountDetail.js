@@ -22,7 +22,7 @@ const AccountDetail = (props) => {
   const [isChanged, setIsChanged] = useState(false);
   const { passwordVisibility, rightIcon, handlePasswordVisibility } =
     useTogglePasswordVisibility();
-  const [image, setImage] = useState(route.params.data.avatarSource);
+  // const [image, setImage] = useState(route.params.data.avatarSource);
   const [userInfo, setUserInfo] = useState({
     firstName: route.params.data.name,
     lastName: route.params.data.lastName,
@@ -191,6 +191,7 @@ const AccountDetail = (props) => {
         <Pressable onPress={showActionSheet}>
           <Image
             source={
+              route.params.data.avatarSource &&
               route.params.data.avatarSource.uri
                 ? { uri: route.params.data.avatarSource.uri }
                 : require("../../../assets/energy.png")

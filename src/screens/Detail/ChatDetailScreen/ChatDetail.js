@@ -1,12 +1,25 @@
-import { View, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  ImageBackground,
+  SafeAreaView,
+  Dimensions,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { useRoute } from "@react-navigation/native";
 import firebase from "../../../utils/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { FontAwesome } from "@expo/vector-icons"; // veya başka bir ikon kütüphanesi
+import Avatar from "../../../components/Header/Avatar";
 
-const Chat = () => {
+const Chat = ({ navigation }) => {
   const [messageList, setMessageList] = useState([]);
   const route = useRoute();
 
@@ -19,6 +32,8 @@ const Chat = () => {
   const translateMessage = async (text, fromLanguage, toLanguage) => {
     const fromLanguageCode = languagesJson[fromLanguage.toLowerCase()];
     const toLanguageCode = languagesJson[toLanguage.toLowerCase()];
+    console.log("fromLanguageCode", fromLanguageCode);
+    console.log("toLanguageCode", toLanguageCode);
 
     try {
       const translation = await translateText(
@@ -190,21 +205,58 @@ const Chat = () => {
       </View>
     );
   };
-
-  return (
-    <View style={{ flex: 1 }}>
-      <GiftedChat
-        messages={messageList}
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: route.params.id,
-        }}
-        renderMessage={renderMessage}
-        messagesContainerStyle={{
-          backgroundColor: "#fff",
+  const renderInputToolbar = (props) => {
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={{
+          backgroundColor: "#F4F4F4", // Özelleştirmek istediğiniz arka plan rengi
+          borderTopColor: "#E0E0E0", // İstediğiniz üst kenar çizgisi rengi
+          borderTopWidth: 1, // İstediğiniz üst kenar çizgisi kalınlığı
+          margin: 7,
+          borderRadius: 50,
         }}
       />
-    </View>
+    );
+  };
+
+  return (
+    <ImageBackground
+      source={require("../../../assets/welcomeBackground.png")}
+      style={styles.background}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FontAwesome name="chevron-left" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={styles.images}>
+            <Avatar size={40} />
+            <View style={styles.name}>
+              <Text style={{ color: "white", fontSize: 18 }}>
+                {route.params.data.name}
+              </Text>
+            </View>
+            <View style={styles.languageIcon}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("SelectLanguage")}
+              >
+                <FontAwesome name="language" size={30} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <GiftedChat
+          messages={messageList}
+          onSend={(messages) => onSend(messages)}
+          user={{
+            _id: route.params.id,
+          }}
+          renderMessage={renderMessage}
+          renderInputToolbar={renderInputToolbar}
+        />
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
@@ -212,5 +264,28 @@ export default Chat;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 5,
+  },
+  background: {
+    flex: 1,
+  },
+  images: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: Dimensions.get("window").width * 0.08,
+  },
+  name: {
+    marginLeft: Dimensions.get("window").width * 0.21,
+  },
+  languageIcon: {
+    marginLeft: Dimensions.get("window").width * 0.23,
+    marginBottom: Dimensions.get("window").height * 0.004,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 7,
+    borderBottomWidth: 1,
+    borderBottomColor: "gray",
   },
 });

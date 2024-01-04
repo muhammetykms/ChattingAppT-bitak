@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   ScrollView,
+  Alert,
 } from "react-native";
 import styles from "./SignUp.style";
 import Input from "../../../components/TextInput/Input";
@@ -15,6 +16,8 @@ import ModalSelector from "react-native-modal-selector";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import firebase from "../../../utils/firebase";
 import uuid from "react-native-uuid";
+import languageList from "../../../../languageList.json";
+import RNPickerSelect from "react-native-picker-select";
 
 const SignUp = ({ navigation }) => {
   const userId = uuid.v4();
@@ -23,17 +26,21 @@ const SignUp = ({ navigation }) => {
   const [mail, setMail] = useState(null);
   const [password, setPassword] = useState(null);
   const [confirmPass, setConfirmPass] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
 
   const data = [
-    { key: 0, label: "Turkish" },
-    { key: 1, label: "English" },
-    { key: 2, label: "Germany" },
+    { label: "Select Language", value: "", key: "0" },
+    ...Object.keys(languageList).map((key) => ({
+      label: `${key}`,
+      value: key,
+      key: key,
+    })),
   ];
 
-  const handleOptionChange = (option) => {
-    console.log(option.label); // Seçilen seçeneğin değerini alabilirsiniz
+  const handleOptionChange = (value) => {
+    setSelectedLanguage(value);
+    console.log(value); // Selected language code
   };
-
   // const handleSignUp = async () => {
   //   try {
   //     const userCredential = await firebase
@@ -70,6 +77,7 @@ const SignUp = ({ navigation }) => {
         mail: mail,
         password: password,
         userId: userId,
+        selectedLanguage: selectedLanguage,
       })
       .then((res) => {
         console.log("user created ");
@@ -146,16 +154,44 @@ const SignUp = ({ navigation }) => {
             <Text style={{ margin: 10, color: "#4E4E4E" }}>
               Sohbet edilirken kullanılacak olan bir dil seçiniz
             </Text>
-            <ModalSelector
-              style={styles.modal}
-              data={data}
-              initValue="Seçenekleri Seçin"
-              onChange={handleOptionChange}
+            <RNPickerSelect
+              items={data}
+              placeholder={{ label: "Seçenekleri Seçin", value: null }}
+              onValueChange={handleOptionChange}
+              style={{
+                inputIOS: {
+                  fontSize: 16,
+                  paddingVertical: 12,
+                  paddingHorizontal: 10,
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 4,
+                  color: "#333",
+                  paddingRight: 30,
+                  textAlign: "center", // Center the text horizontally
+                },
+                inputAndroid: {
+                  fontSize: 16,
+                  paddingVertical: 12,
+                  paddingHorizontal: 10,
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 4,
+                  color: "#333",
+                  paddingRight: 30,
+                  textAlign: "center", // Center the text horizontally
+                },
+                placeholder: {
+                  color: "#555",
+                },
+              }}
             />
             <Button
               title={"Kayıt Ol"}
               onPress={() => {
                 if (validate()) {
+                  // Use the selectedLanguage state where needed
+                  console.log("Selected Language:", selectedLanguage);
                   registerUser();
                 } else {
                   Alert.alert("Bilgileri eksik girdiniz");

@@ -10,18 +10,21 @@ import {
   Alert,
   SafeAreaView,
 } from "react-native";
+import * as FileSystem from "expo-file-system";
+
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./Settings.style";
 import firebase from "../../../utils/firebase";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import GetOutButton from "../../../components/Button/Button";
 
 const Settings = ({ navigation }) => {
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
-  // const [ID, setID] = useState("");
+  const [userId, setUserId] = useState("");
 
   const [avatarSource, setAvatarSource] = useState(null);
 
@@ -32,6 +35,16 @@ const Settings = ({ navigation }) => {
       icon: "person",
     },
     {
+      name: "ProfileQR",
+      title: "QR",
+      icon: "qr-code-outline",
+    },
+    {
+      title: "Bildirimler",
+      icon: "notifications",
+    },
+    {
+      name: "PrivacyDetail",
       title: "Gizlilik",
       icon: "lock-closed",
     },
@@ -39,22 +52,15 @@ const Settings = ({ navigation }) => {
       title: "Sohbetler",
       icon: "chatbubble",
     },
-    {
-      title: "Bildirimler",
-      icon: "notifications",
-    },
+
     {
       title: "Saklama Alanı",
       icon: "save",
     },
     {
+      name: "HelpDetail",
       title: "Yardım",
       icon: "help-circle",
-    },
-    {
-      name: "ProfileQR",
-      title: "QR",
-      icon: "qr-code-outline",
     },
   ];
 
@@ -144,7 +150,7 @@ const Settings = ({ navigation }) => {
     }
   };
 
-  console.log(avatarSource);
+  // console.log(avatarSource);
 
   const navigateToDetail = (setting) => {
     if (setting) {
@@ -161,7 +167,30 @@ const Settings = ({ navigation }) => {
       // Diğer ayar sayfalarına yönlendirme işlemleri
     }
   };
-  console.log("Vatar: ", avatarSource);
+  // console.log("Vatar: ", avatarSource);
+
+  const handleLogout = async () => {
+    // Get the user's identifier (you might get it from AsyncStorage or elsewhere)
+    const userId = await AsyncStorage.getItem("USERID");
+
+    // Update Firestore document to mark the user as logged out
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(userId)
+      .update({
+        loggedIn: false, // Logout status
+      })
+      .then(() => {
+        console.log("Firestore document updated (logout)");
+
+        // After updating Firestore, you can navigate to the sign-in page
+        navigation.navigate("SignIn");
+      })
+      .catch((error) => {
+        console.error("Firestore error:", error);
+      });
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={styles.container}>
@@ -194,6 +223,7 @@ const Settings = ({ navigation }) => {
               <Text>{setting.title}</Text>
             </TouchableOpacity>
           ))}
+          <GetOutButton title={"Çıkış Yap"} onPress={handleLogout} />
         </View>
       </ScrollView>
     </SafeAreaView>

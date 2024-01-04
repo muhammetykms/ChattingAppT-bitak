@@ -7,7 +7,7 @@ import ForgotPasswordScreen from "../screens/Login/ForgotPasswordScreen/ForgotPa
 
 // --------------Tabs-----------------
 import ChatScreen from "../screens/Tab/ChatScreen/Chat";
-// import CallsScreen from "../screens/Tab/CallsScreen/Calls";
+import SearchScreen from "../screens/Tab/SearchScreen/Search";
 import QRScreen from "../screens/Tab/QRScreen/QR";
 import SettingsScreen from "../screens/Tab/SettingScreen/Settings";
 import StatusScreen from "../screens/Tab/StatusScreen/Status";
@@ -20,6 +20,8 @@ import ChatDetailScreen from "../screens/Detail/ChatDetailScreen/ChatDetail";
 import AccountDetailScreen from "../screens/Detail/AccountDetailScreen/AccountDetail";
 import ProfileQRScreen from "../screens/Detail/ProfileQRScreen/ProfileQR";
 import SelectLanguageScreen from "../screens/Detail/SelectLanguageScreen/SelectLanguage";
+import HelpDetailScreen from "../screens/Detail/HelpDetailScreen/Help";
+import PrivacyDetailScreen from "../screens/Detail/PrivacyDetailScreen/Privacy";
 
 // --------------Navigations-----------------
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -43,7 +45,7 @@ function BottomNavigator() {
           } else if (route.name === "Durum") {
             iconName = "home-outline"; // Özel simge adını buraya ekleyin
           } else if (route.name === "Aramalar") {
-            iconName = "call"; // Özel simge adını buraya ekleyin
+            iconName = "search"; // Özel simge adını buraya ekleyin
           } else if (route.name === "QR") {
             iconName = "qr-code-outline"; // Özel simge adını buraya ekleyin
           }
@@ -56,11 +58,11 @@ function BottomNavigator() {
         component={StatusScreen}
         options={{ tabBarLabel: "Durum" }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Aramalar"
-        component={CallsScreen}
-        options={{ tabBarLabel: "Aramalar" }}
-      /> */}
+        component={SearchScreen}
+        options={{ tabBarLabel: "Ara" }}
+      />
       <Tab.Screen
         name="QR"
         component={QRScreen}
@@ -86,7 +88,10 @@ function StackNavigator() {
       <Stack.Screen
         name="BottomTab"
         component={BottomNavigator}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          gestureEnabled: false, // Geri gitme hareketini devre dışı bırak
+        }}
       />
       <Stack.Screen
         name="Welcome"
@@ -112,10 +117,12 @@ function StackNavigator() {
       <Stack.Screen
         name="ChatDetail"
         component={ChatDetailScreen}
-        options={{ headerTitle: (props) => <ChatHeader {...props} /> }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen name="AccountDetail" component={AccountDetailScreen} />
       <Stack.Screen name="ProfileQR" component={ProfileQRScreen} />
+      <Stack.Screen name="HelpDetail" component={HelpDetailScreen} />
+      <Stack.Screen name="PrivacyDetail" component={PrivacyDetailScreen} />
       <Stack.Screen
         name="SelectLanguage"
         component={SelectLanguageScreen}

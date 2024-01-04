@@ -48,15 +48,33 @@ const QRScreen = () => {
     console.log("data: ", data);
     try {
       // Extract name, email, and userId
-      const [friendName, friendEmail, friendUserId] = data.split(" ");
+      const [
+        friendName,
+        friendEmail,
+        friendUserId,
+        friendlastname,
+        friendimageUrl,
+        friendselectedLanguage,
+      ] = data.split(" ");
 
       // Ensure that the data is valid
-      if (friendName && friendEmail && friendUserId) {
+      if (
+        friendName &&
+        friendEmail &&
+        friendUserId &&
+        friendlastname &&
+        friendimageUrl &&
+        friendselectedLanguage
+      ) {
         // Add friend to the "friends" collection with user-specific ID
         await firebase.firestore().collection(`users/${id}/friends`).add({
           name: friendName,
           email: friendEmail,
           userId: friendUserId,
+          lastname: friendlastname,
+          imageUrl: friendimageUrl,
+          selectedLanguage: friendselectedLanguage,
+
           // Add other fields if needed
         });
 

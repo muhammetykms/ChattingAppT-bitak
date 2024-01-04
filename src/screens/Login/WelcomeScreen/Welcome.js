@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,39 @@ import {
 } from "react-native";
 import styles from "./Welcome.style";
 import style from "react-native-modal-picker/style";
+import firebase from "../../../utils/firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen = ({ navigation }) => {
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    try {
+      // Replace 'userId' with the actual way you identify the user
+      const userId = await AsyncStorage.getItem("USERID"); // You need to implement this logic
+
+      const userDoc = await firebase
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .get();
+
+      if (userDoc.exists) {
+        const loggedIn = userDoc.data().loggedIn;
+        console.log("LoggedIn", loggedIn);
+
+        if (loggedIn === true) {
+          // If the user is logged in, navigate to the BottomTab directly
+          navigation.navigate("BottomTab");
+        }
+      }
+    } catch (error) {
+      console.error("Error checking login status:", error);
+    }
+  };
+
   return (
     <ImageBackground
       source={require("../../../assets/welcomeBackground.png")}
